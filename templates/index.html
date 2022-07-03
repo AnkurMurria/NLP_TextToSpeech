@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Text to Speech Project</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+	<!-- Navigation -->
+	<nav class="navbar navbar-light bg-light static-top">
+		<div class="container-fluid">
+			<h2>NLP Text to Speech</h2>
+		</div>
+	</nav>
+
+	<!-- Testimonials -->
+	<section class="testimonials text-center">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-6 col-xs-12">
+					<form method="post" id="datafetch_form" enctype="multipart/form-data">
+						<div>
+							<textarea class="form-control" rows="8" id="comment"></textarea>
+						</div>
+						<div><button class="form-control btn-secondary mb-5" id="fetch">Convert</button></div>
+					</form>
+				</div>
+			</div>						
+		</div>
+	</section>
+		
+	<div id="loading"><div class="loader"></div></div>
+	<!-- Bootstrap core JavaScript -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			$('#loading').hide();			
+			$("#fetch").click(function(e){
+				e.preventDefault();
+				var input = $('#comment').val();
+				$('#loading').show();
+				$.ajax({
+					url : "../predict",   //change url
+					type: "post",
+					mode: 'no-cors',
+					crossdomain: true,
+					withCredentials: false,
+					credentials: 'same-origin',
+					headers: {
+						'Content-Type': 'application/json;charset=UTF-8',
+						"Access-Control-Allow-Origin": "*"
+					},
+					data: JSON.stringify({data:input}),
+					success: function(response){
+						$(".json-result").html("");
+						$(".json-result").html('<audio id="audio" controls="controls"><source id="audioSource" src=""></source>Your browser does not support the audio format.</audio>');
+						var audio = document.getElementById('audio');
+						var source = document.getElementById('audioSource');
+						var audioFile = "data:audio/wav;base64," + response.data;
+						source.src = audioFile;
+						audio.load();
+						$('#loading').hide();
+					}
+				});
+			});
+		});
+	</script>
+</body>
+
+</html>
